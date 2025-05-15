@@ -1,16 +1,25 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, ShoppingCart, Menu, X, Phone, Mail } from "lucide-react";
+import { Search, ShoppingCart, Menu, X, Phone, Mail, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import CartSidebar from "@/components/CartSidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const { totalItems } = useCart();
+  const { user, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const categories = [
@@ -81,9 +90,41 @@ const Header = () => {
 
         <div className="flex items-center space-x-3">
           <div className="hidden md:block">
-            <Link to="/account" className="text-sm font-medium hover:text-brand-orange">
-              My Account
-            </Link>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <User size={18} />
+                    <span>{user.name || user.email.split('@')[0]}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to="/account">My Account</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/orders">My Orders</Link>
+                  </DropdownMenuItem>
+                  {user.role === 'admin' && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin">Admin Panel</Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut} className="text-red-500">
+                    <LogOut size={16} className="mr-2" /> Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login" className="text-sm font-medium hover:text-brand-orange flex items-center gap-1">
+                <User size={18} />
+                Sign In
+              </Link>
+            )}
           </div>
           
           <Sheet>
@@ -161,15 +202,51 @@ const Header = () => {
                       </Link>
                     </li>
                   ))}
-                  <li className="border-b">
-                    <Link
-                      to="/account"
-                      className="block py-3 px-2 hover:bg-gray-50"
-                      onClick={toggleMenu}
-                    >
-                      My Account
-                    </Link>
-                  </li>
+                  {user ? (
+                    <>
+                      <li className="border-b">
+                        <Link
+                          to="/account"
+                          className="block py-3 px-2 hover:bg-gray-50"
+                          onClick={toggleMenu}
+                        >
+                          My Account
+                        </Link>
+                      </li>
+                      {user.role === 'admin' && (
+                        <li className="border-b">
+                          <Link
+                            to="/admin"
+                            className="block py-3 px-2 hover:bg-gray-50"
+                            onClick={toggleMenu}
+                          >
+                            Admin Panel
+                          </Link>
+                        </li>
+                      )}
+                      <li className="border-b">
+                        <button
+                          onClick={() => {
+                            signOut();
+                            toggleMenu();
+                          }}
+                          className="block w-full text-left py-3 px-2 hover:bg-gray-50 text-red-500"
+                        >
+                          Sign Out
+                        </button>
+                      </li>
+                    </>
+                  ) : (
+                    <li className="border-b">
+                      <Link
+                        to="/login"
+                        className="block py-3 px-2 hover:bg-gray-50"
+                        onClick={toggleMenu}
+                      >
+                        Sign In / Register
+                      </Link>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>

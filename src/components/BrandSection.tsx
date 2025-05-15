@@ -31,13 +31,16 @@ const BrandSection: React.FC = () => {
             <Link
               key={brand.id}
               to={`/brand/${brand.id}`}
-              className="flex items-center justify-center border border-gray-200 rounded-full p-4 hover:border-brand-orange transition-colors"
+              className="flex flex-col items-center border border-gray-200 rounded-lg p-4 hover:border-brand-orange transition-colors"
             >
-              <img
-                src={brand.logo}
-                alt={brand.name}
-                className="h-8 object-contain"
-              />
+              <div className="h-12 flex items-center justify-center mb-2">
+                <img
+                  src={brand.logo}
+                  alt={brand.name}
+                  className="h-8 object-contain"
+                />
+              </div>
+              <span className="text-sm font-medium text-center">{brand.name}</span>
             </Link>
           ))}
         </div>

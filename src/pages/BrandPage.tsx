@@ -57,6 +57,99 @@ const products = [
   },
 ];
 
+// Model data for each brand
+const brandModels = {
+  apple: [
+    {
+      name: "iPhone 14 Pro Max",
+      image: "https://images.unsplash.com/photo-1665577893321-382839a362eb?q=80&w=1035&auto=format&fit=crop",
+      slug: "iphone-14-pro-max"
+    },
+    {
+      name: "iPhone 14 Pro",
+      image: "https://images.unsplash.com/photo-1662444290846-a46489c66a86?q=80&w=1852&auto=format&fit=crop",
+      slug: "iphone-14-pro"
+    },
+    {
+      name: "iPhone 14 Plus",
+      image: "https://images.unsplash.com/photo-1664478546384-d57ffe74a669?q=80&w=1780&auto=format&fit=crop",
+      slug: "iphone-14-plus"
+    },
+    {
+      name: "iPhone 14",
+      image: "https://images.unsplash.com/photo-1665577893849-94056113f882?q=80&w=1035&auto=format&fit=crop",
+      slug: "iphone-14"
+    },
+    {
+      name: "iPhone 13 Pro Max",
+      image: "https://images.unsplash.com/photo-1636051028888-77fe370d519b?q=80&w=1035&auto=format&fit=crop",
+      slug: "iphone-13-pro-max"
+    },
+    {
+      name: "iPhone 13 Pro",
+      image: "https://images.unsplash.com/photo-1635069701669-4afe928f5179?q=80&w=1035&auto=format&fit=crop",
+      slug: "iphone-13-pro"
+    },
+    {
+      name: "iPhone 13",
+      image: "https://images.unsplash.com/photo-1632634076846-efe9137ef8f5?q=80&w=1035&auto=format&fit=crop",
+      slug: "iphone-13"
+    },
+    {
+      name: "iPhone 13 Mini",
+      image: "https://images.unsplash.com/photo-1636052081518-f3063f35a08b?q=80&w=1035&auto=format&fit=crop",
+      slug: "iphone-13-mini"
+    },
+    {
+      name: "iPhone 12 Pro Max",
+      image: "https://images.unsplash.com/photo-1603921326210-6edd2d60ca68?q=80&w=1035&auto=format&fit=crop",
+      slug: "iphone-12-pro-max"
+    }
+  ],
+  samsung: [
+    {
+      name: "Galaxy S23 Ultra",
+      image: "https://images.unsplash.com/photo-1676315527743-b1b7c60486d8?q=80&w=1035&auto=format&fit=crop",
+      slug: "galaxy-s23-ultra"
+    },
+    {
+      name: "Galaxy S23+",
+      image: "https://images.unsplash.com/photo-1677099364710-4087796ead24?q=80&w=1035&auto=format&fit=crop",
+      slug: "galaxy-s23-plus"
+    },
+    {
+      name: "Galaxy S23",
+      image: "https://images.unsplash.com/photo-1677099375551-68ed40600043?q=80&w=1035&auto=format&fit=crop",
+      slug: "galaxy-s23"
+    },
+    {
+      name: "Galaxy S22 Ultra",
+      image: "https://images.unsplash.com/photo-1644654998346-84a40c67f645?q=80&w=1035&auto=format&fit=crop",
+      slug: "galaxy-s22-ultra"
+    },
+    {
+      name: "Galaxy S22+",
+      image: "https://images.unsplash.com/photo-1644655007829-261159f4ba56?q=80&w=1035&auto=format&fit=crop",
+      slug: "galaxy-s22-plus"
+    },
+    {
+      name: "Galaxy Note 20",
+      image: "https://images.unsplash.com/photo-1598327105854-c8674faddf79?q=80&w=1035&auto=format&fit=crop",
+      slug: "galaxy-note-20"
+    },
+    {
+      name: "Galaxy A53",
+      image: "https://images.unsplash.com/photo-1653916986137-613f4e3f6e7e?q=80&w=1035&auto=format&fit=crop",
+      slug: "galaxy-a53"
+    },
+    {
+      name: "Galaxy A23",
+      image: "https://images.unsplash.com/photo-1611740677496-3e0ef906e1e8?q=80&w=1035&auto=format&fit=crop",
+      slug: "galaxy-a23"
+    }
+  ]
+};
+
 const BrandPage = () => {
   const { brandId } = useParams();
   
@@ -78,6 +171,7 @@ const BrandPage = () => {
   }
   
   const brandProducts = products.filter((product) => product.brand === brandId);
+  const models = brandModels[brandId as keyof typeof brandModels] || [];
   
   return (
     <div className="container mx-auto px-4 py-6">
@@ -98,90 +192,48 @@ const BrandPage = () => {
         </ol>
       </nav>
       
-      {/* Brand banner */}
-      <div 
-        className="relative h-48 sm:h-64 md:h-80 mb-8 rounded-lg overflow-hidden bg-cover bg-center"
-        style={{ 
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${brand.banner})` 
-        }}
-      >
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
-          <img 
-            src={brand.logo} 
-            alt={brand.name}
-            className="h-10 sm:h-12 md:h-16 mb-4 object-contain bg-white p-2 rounded"
-          />
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
-            {brand.name} Parts & Accessories
-          </h1>
-        </div>
-      </div>
-      
+      {/* Brand header */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <h1 className="text-2xl font-bold mb-4 uppercase">{brand.name} MODELS</h1>
         <p className="text-gray-700">{brand.description}</p>
       </div>
       
       {/* Product models grid */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-        <h2 className="text-xl font-bold mb-6">{brand.name.toUpperCase()} MODELS</h2>
-        
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {brand.id === "apple" && (
-            <>
-              {["iPhone 14 Pro Max", "iPhone 14 Pro", "iPhone 14 Plus", "iPhone 14", "iPhone 13 Pro Max", "iPhone 13 Pro", "iPhone 13", "iPhone 13 Mini", "iPhone 12 Pro Max"].map((model) => (
-                <Link
-                  key={model}
-                  to={`/products/iphone14-backpanel`} // This would normally be a dynamic link
-                  className="p-4 border rounded-lg text-center hover:border-brand-orange transition-colors"
-                >
-                  <img 
-                    src="https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
-                    alt={model}
-                    className="w-full h-auto aspect-square object-contain mb-3"
-                  />
-                  <h3 className="text-sm font-medium">{model}</h3>
-                </Link>
-              ))}
-            </>
-          )}
-          
-          {brand.id === "samsung" && (
-            <>
-              {["Galaxy S23 Ultra", "Galaxy S23+", "Galaxy S23", "Galaxy S22 Ultra", "Galaxy S22+", "Galaxy Note 20", "Galaxy A53", "Galaxy A23", "Galaxy M53"].map((model) => (
-                <Link
-                  key={model}
-                  to={`/products/note8-battery`} // This would normally be a dynamic link
-                  className="p-4 border rounded-lg text-center hover:border-brand-orange transition-colors"
-                >
-                  <img 
-                    src="https://images.unsplash.com/photo-1565849904461-04a58ad377e0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2036&q=80" 
-                    alt={model}
-                    className="w-full h-auto aspect-square object-contain mb-3"
-                  />
-                  <h3 className="text-sm font-medium">{model}</h3>
-                </Link>
-              ))}
-            </>
-          )}
+          {models.map((model, index) => (
+            <Link
+              key={model.slug}
+              to={`/category/${brandId}-${model.slug}`}
+              className="border rounded-lg text-center hover:border-brand-orange transition-colors overflow-hidden"
+            >
+              <div className="aspect-square">
+                <img 
+                  src={model.image} 
+                  alt={model.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-3">
+                <h3 className="text-sm font-medium">{model.name}</h3>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
       
       {/* Featured products */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-bold mb-6">FEATURED {brand.name.toUpperCase()} PRODUCTS</h2>
-        
-        {brandProducts.length > 0 ? (
+      {brandProducts.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-6">FEATURED {brand.name.toUpperCase()} PRODUCTS</h2>
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {brandProducts.map((product) => (
               <ProductCard key={product.id} {...product} />
             ))}
           </div>
-        ) : (
-          <p className="text-center py-8 text-gray-500">
-            No products available for this brand at the moment. Check back soon!
-          </p>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

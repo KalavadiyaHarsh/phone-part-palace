@@ -22,39 +22,41 @@ import { AuthProvider } from "@/contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Toaster />
-        <Sonner />
         <BrowserRouter>
-          <Routes>
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="products/new" element={<AdminProductForm />} />
-              <Route path="products/edit/:id" element={<AdminProductForm />} />
-            </Route>
-            
-            {/* User Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Index />} />
-              <Route path="/products/:slug" element={<ProductDetail />} />
-              <Route path="/brand/:brandId" element={<BrandPage />} />
-              <Route path="/category/:categoryId" element={<CategoryPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="products/new" element={<AdminProductForm />} />
+                <Route path="products/edit/:id" element={<AdminProductForm />} />
+              </Route>
+              
+              {/* User Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Index />} />
+                <Route path="/products/:slug" element={<ProductDetail />} />
+                <Route path="/brand/:brandId" element={<BrandPage />} />
+                <Route path="/category/:categoryId" element={<CategoryPage />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </TooltipProvider>
         </BrowserRouter>
       </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+};
 
 export default App;

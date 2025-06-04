@@ -40,8 +40,8 @@ const Header = () => {
 
   return (
     <header className="w-full">
-      {/* Top bar */}
-      <div className="bg-brand-blue py-2 text-white">
+      {/* Top bar - hidden on mobile */}
+      <div className="bg-brand-blue py-2 text-white hidden md:block">
         <div className="container flex flex-wrap items-center justify-between px-4">
           <div className="flex items-center space-x-4">
             <Link to="/" className="flex items-center space-x-2">
@@ -67,7 +67,7 @@ const Header = () => {
       {/* Main header */}
       <div className="container flex items-center justify-between py-4 px-4">
         <Link to="/" className="flex-shrink-0">
-          <div className="text-2xl font-bold text-brand-orange">
+          <div className="text-xl md:text-2xl font-bold text-brand-orange">
             MPARTS
             <span className="text-brand-blue ml-1">STORE</span>
           </div>
@@ -89,7 +89,8 @@ const Header = () => {
         </div>
 
         <div className="flex items-center space-x-3">
-          <div className="hidden md:block">
+          {/* Sign in option - only shown on desktop */}
+          <div className="hidden lg:block">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -143,7 +144,7 @@ const Header = () => {
             </SheetContent>
           </Sheet>
           
-          <Button variant="outline" size="icon" className="md:hidden" onClick={toggleMenu}>
+          <Button variant="outline" size="icon" className="lg:hidden" onClick={toggleMenu}>
             {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </Button>
         </div>
@@ -153,12 +154,12 @@ const Header = () => {
       <nav className="bg-brand-orange text-white">
         <div className="container px-4">
           {/* Desktop navigation */}
-          <ul className="hidden md:flex">
+          <ul className="hidden lg:flex">
             {categories.map((category) => (
               <li key={category.name}>
                 <Link
                   to={category.href}
-                  className="block py-3 px-4 hover:bg-brand-orange/80 transition-colors"
+                  className="block py-3 px-4 hover:bg-brand-orange/80 transition-colors text-sm"
                 >
                   {category.name}
                 </Link>
@@ -168,11 +169,11 @@ const Header = () => {
 
           {/* Mobile navigation */}
           {isMenuOpen && (
-            <div className="md:hidden absolute z-50 left-0 right-0 bg-white shadow-lg">
+            <div className="lg:hidden absolute z-50 left-0 right-0 bg-white shadow-lg">
               <div className="flex justify-between items-center p-4 border-b">
-                <h2 className="font-semibold">Menu</h2>
+                <h2 className="font-semibold text-gray-900">Menu</h2>
                 <Button variant="ghost" size="icon" onClick={toggleMenu}>
-                  <X size={20} />
+                  <X size={20} className="text-gray-900" />
                 </Button>
               </div>
               <div className="p-2">
@@ -195,7 +196,7 @@ const Header = () => {
                     <li key={category.name} className="border-b">
                       <Link
                         to={category.href}
-                        className="block py-3 px-2 hover:bg-gray-50"
+                        className="block py-3 px-2 hover:bg-gray-50 text-gray-900"
                         onClick={toggleMenu}
                       >
                         {category.name}
@@ -207,7 +208,7 @@ const Header = () => {
                       <li className="border-b">
                         <Link
                           to="/account"
-                          className="block py-3 px-2 hover:bg-gray-50"
+                          className="block py-3 px-2 hover:bg-gray-50 text-gray-900"
                           onClick={toggleMenu}
                         >
                           My Account
@@ -217,7 +218,7 @@ const Header = () => {
                         <li className="border-b">
                           <Link
                             to="/admin"
-                            className="block py-3 px-2 hover:bg-gray-50"
+                            className="block py-3 px-2 hover:bg-gray-50 text-gray-900"
                             onClick={toggleMenu}
                           >
                             Admin Panel
@@ -240,7 +241,7 @@ const Header = () => {
                     <li className="border-b">
                       <Link
                         to="/login"
-                        className="block py-3 px-2 hover:bg-gray-50"
+                        className="block py-3 px-2 hover:bg-gray-50 text-gray-900"
                         onClick={toggleMenu}
                       >
                         Sign In / Register

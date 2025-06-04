@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
@@ -24,18 +24,18 @@ const AdminLayout = () => {
           <div className="px-4 py-3 text-xs uppercase font-bold text-gray-500">
             Management
           </div>
-          <a href="/admin" className="block px-4 py-2 hover:bg-gray-800 transition-colors">
+          <Link to="/admin" className="block px-4 py-2 hover:bg-gray-800 transition-colors">
             Dashboard
-          </a>
-          <a href="/admin/products" className="block px-4 py-2 hover:bg-gray-800 transition-colors">
+          </Link>
+          <Link to="/admin/products" className="block px-4 py-2 hover:bg-gray-800 transition-colors">
             Products
-          </a>
-          <a href="/admin/orders" className="block px-4 py-2 hover:bg-gray-800 transition-colors">
+          </Link>
+          <Link to="/admin/orders" className="block px-4 py-2 hover:bg-gray-800 transition-colors">
             Orders
-          </a>
-          <a href="/admin/customers" className="block px-4 py-2 hover:bg-gray-800 transition-colors">
+          </Link>
+          <Link to="/admin/customers" className="block px-4 py-2 hover:bg-gray-800 transition-colors">
             Customers
-          </a>
+          </Link>
         </nav>
       </div>
       {/* Admin Content */}

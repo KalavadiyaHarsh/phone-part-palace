@@ -118,10 +118,10 @@ export type Product = {
 
 // Global products state to share across components
 let globalProducts: Product[] = [...SAMPLE_PRODUCTS];
-const listeners: (() => void)[] = [];
+const listeners: Set<() => void> = new Set();
 
 const notifyListeners = () => {
-  console.log("Notifying all listeners of product changes");
+  console.log("Notifying all listeners of product changes. Total listeners:", listeners.size);
   listeners.forEach(listener => {
     try {
       listener();
@@ -133,25 +133,36 @@ const notifyListeners = () => {
 
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([...globalProducts]);
+  const [loading, setLoading] = useState(false);
+  
+  // Create a stable listener function
+  const updateLocalState = useCallback(() => {
+    console.log("Product listener triggered, updating local state with", globalProducts.length, "products");
+    setProducts([...globalProducts]);
+  }, []);
   
   useEffect(() => {
-    const listener = () => {
-      console.log("Product listener triggered, updating local state");
-      setProducts([...globalProducts]);
-    };
+    // Add listener
+    listeners.add(updateLocalState);
+    console.log("Added listener, total listeners:", listeners.size);
     
-    listeners.push(listener);
+    // Initial sync
+    setProducts([...globalProducts]);
     
     return () => {
-      const index = listeners.indexOf(listener);
-      if (index > -1) {
-        listeners.splice(index, 1);
-      }
+      listeners.delete(updateLocalState);
+      console.log("Removed listener, remaining listeners:", listeners.size);
     };
-  }, []);
+  }, [updateLocalState]);
   
   const getProducts = useCallback(async () => {
     console.log("getProducts called, returning:", globalProducts.length, "products");
+    setLoading(true);
+    
+    // Simulate API delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    setLoading(false);
     // Return a fresh copy to ensure reactivity
     return [...globalProducts];
   }, []);
@@ -169,7 +180,7 @@ export const useProducts = () => {
   
   const createProduct = useCallback(async (productData: Omit<Product, 'id'>) => {
     // Generate a unique ID
-    const id = `prod-${Date.now()}`;
+    const id = `prod-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     // In a real app, this would be an API call
     const newProduct = {
@@ -178,8 +189,11 @@ export const useProducts = () => {
     };
     
     console.log("Creating new product:", newProduct);
-    globalProducts.push(newProduct);
+    globalProducts = [...globalProducts, newProduct];
     console.log("Total products after creation:", globalProducts.length);
+    
+    // Show success message
+    toast.success(`Product "${newProduct.name}" created successfully!`);
     
     // Force update all components
     notifyListeners();
@@ -193,6 +207,11 @@ export const useProducts = () => {
     if (index !== -1) {
       globalProducts[index] = { ...globalProducts[index], ...productData };
       console.log("Updated product:", globalProducts[index]);
+      
+      // Update the global array reference
+      globalProducts = [...globalProducts];
+      
+      toast.success("Product updated successfully!");
       notifyListeners();
     }
     
@@ -202,13 +221,22 @@ export const useProducts = () => {
   const deleteProduct = useCallback(async (id: string) => {
     // In a real app, this would be an API call
     const originalLength = globalProducts.length;
+    const productToDelete = globalProducts.find(p => p.id === id);
+    
     globalProducts = globalProducts.filter(product => product.id !== id);
     console.log("Deleted product, products count changed from", originalLength, "to", globalProducts.length);
+    
+    if (productToDelete) {
+      toast.success(`Product "${productToDelete.name}" deleted successfully!`);
+    }
+    
     notifyListeners();
     return true;
   }, []);
   
   return {
+    products,
+    loading,
     getProducts,
     getProduct,
     createProduct,

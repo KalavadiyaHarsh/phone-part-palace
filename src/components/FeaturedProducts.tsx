@@ -16,30 +16,13 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
   category,
   limit = 8,
 }) => {
-  const { getProducts } = useProducts();
-  const [products, setProducts] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
+  const { products, loading } = useProducts();
 
-  React.useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const allProducts = await getProducts();
-        console.log("Fetched products in FeaturedProducts:", allProducts);
-        setProducts(allProducts);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [getProducts]);
+  console.log("FeaturedProducts render - Total products:", products.length);
 
   // Filter products based on provided IDs, category, or take all up to the limit
   const filteredProducts = React.useMemo(() => {
-    console.log("Filtering products:", { products, productIds, category, limit });
+    console.log("Filtering products:", { productsCount: products.length, productIds, category, limit });
     
     if (productIds && productIds.length > 0) {
       return products
@@ -53,7 +36,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
     return products.slice(0, limit);
   }, [products, productIds, category, limit]);
 
-  console.log("Filtered products to display:", filteredProducts);
+  console.log("Filtered products to display:", filteredProducts.length);
 
   if (loading) {
     return (

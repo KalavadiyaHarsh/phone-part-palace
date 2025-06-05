@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { toast } from "@/components/ui/sonner";
 
 // Sample product data (in a real app, this would come from an API)
@@ -68,7 +68,7 @@ const SAMPLE_PRODUCTS = [
     name: "RD 009T LCD Separator Machine",
     price: 2799,
     originalPrice: 3499,
-    image: "https://images.unsplash.com/photo-1602526429747-ac387a91d43b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+    image: "https://images.unsplash.com/photo-1602526429747-ac387a91d43b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
     category: "Tools",
     slug: "rd-009t-lcd-separator-machine",
     description: "Professional machine for separating LCD screens.",
@@ -115,24 +115,47 @@ export type Product = {
   stock?: number;
 };
 
+// Global products state to share across components
+let globalProducts: Product[] = [...SAMPLE_PRODUCTS];
+const listeners: (() => void)[] = [];
+
+const notifyListeners = () => {
+  listeners.forEach(listener => listener());
+};
+
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>(SAMPLE_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>(globalProducts);
+  
+  useEffect(() => {
+    const listener = () => {
+      setProducts([...globalProducts]);
+    };
+    
+    listeners.push(listener);
+    
+    return () => {
+      const index = listeners.indexOf(listener);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    };
+  }, []);
   
   const getProducts = useCallback(async () => {
     // In a real app, this would be an API call
-    return products;
-  }, [products]);
+    return globalProducts;
+  }, []);
   
   const getProduct = useCallback(async (id: string) => {
     // In a real app, this would be an API call
-    const product = products.find(p => p.id === id);
+    const product = globalProducts.find(p => p.id === id);
     
     if (!product) {
       throw new Error("Product not found");
     }
     
     return product;
-  }, [products]);
+  }, []);
   
   const createProduct = useCallback(async (productData: Omit<Product, 'id'>) => {
     // Generate a unique ID
@@ -144,26 +167,27 @@ export const useProducts = () => {
       ...productData,
     };
     
-    setProducts(prev => [...prev, newProduct]);
+    globalProducts.push(newProduct);
+    notifyListeners();
+    
     return newProduct;
   }, []);
   
   const updateProduct = useCallback(async (id: string, productData: Partial<Product>) => {
     // In a real app, this would be an API call
-    setProducts(prev => 
-      prev.map(product => 
-        product.id === id 
-          ? { ...product, ...productData } 
-          : product
-      )
-    );
+    const index = globalProducts.findIndex(product => product.id === id);
+    if (index !== -1) {
+      globalProducts[index] = { ...globalProducts[index], ...productData };
+      notifyListeners();
+    }
     
     return { id, ...productData };
   }, []);
   
   const deleteProduct = useCallback(async (id: string) => {
     // In a real app, this would be an API call
-    setProducts(prev => prev.filter(product => product.id !== id));
+    globalProducts = globalProducts.filter(product => product.id !== id);
+    notifyListeners();
     return true;
   }, []);
   

@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect } from "react";
 import { toast } from "@/components/ui/sonner";
 
@@ -120,14 +121,22 @@ let globalProducts: Product[] = [...SAMPLE_PRODUCTS];
 const listeners: (() => void)[] = [];
 
 const notifyListeners = () => {
-  listeners.forEach(listener => listener());
+  console.log("Notifying all listeners of product changes");
+  listeners.forEach(listener => {
+    try {
+      listener();
+    } catch (error) {
+      console.error("Error in product listener:", error);
+    }
+  });
 };
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>(globalProducts);
+  const [products, setProducts] = useState<Product[]>([...globalProducts]);
   
   useEffect(() => {
     const listener = () => {
+      console.log("Product listener triggered, updating local state");
       setProducts([...globalProducts]);
     };
     
@@ -142,8 +151,9 @@ export const useProducts = () => {
   }, []);
   
   const getProducts = useCallback(async () => {
-    // In a real app, this would be an API call
-    return globalProducts;
+    console.log("getProducts called, returning:", globalProducts.length, "products");
+    // Return a fresh copy to ensure reactivity
+    return [...globalProducts];
   }, []);
   
   const getProduct = useCallback(async (id: string) => {
@@ -167,7 +177,11 @@ export const useProducts = () => {
       ...productData,
     };
     
+    console.log("Creating new product:", newProduct);
     globalProducts.push(newProduct);
+    console.log("Total products after creation:", globalProducts.length);
+    
+    // Force update all components
     notifyListeners();
     
     return newProduct;
@@ -178,6 +192,7 @@ export const useProducts = () => {
     const index = globalProducts.findIndex(product => product.id === id);
     if (index !== -1) {
       globalProducts[index] = { ...globalProducts[index], ...productData };
+      console.log("Updated product:", globalProducts[index]);
       notifyListeners();
     }
     
@@ -186,7 +201,9 @@ export const useProducts = () => {
   
   const deleteProduct = useCallback(async (id: string) => {
     // In a real app, this would be an API call
+    const originalLength = globalProducts.length;
     globalProducts = globalProducts.filter(product => product.id !== id);
+    console.log("Deleted product, products count changed from", originalLength, "to", globalProducts.length);
     notifyListeners();
     return true;
   }, []);

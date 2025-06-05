@@ -23,7 +23,9 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
   React.useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true);
         const allProducts = await getProducts();
+        console.log("Fetched products in FeaturedProducts:", allProducts);
         setProducts(allProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -37,7 +39,9 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
 
   // Filter products based on provided IDs, category, or take all up to the limit
   const filteredProducts = React.useMemo(() => {
-    if (productIds) {
+    console.log("Filtering products:", { products, productIds, category, limit });
+    
+    if (productIds && productIds.length > 0) {
       return products
         .filter((product) => productIds.includes(product.id))
         .slice(0, limit);
@@ -48,6 +52,8 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
     }
     return products.slice(0, limit);
   }, [products, productIds, category, limit]);
+
+  console.log("Filtered products to display:", filteredProducts);
 
   if (loading) {
     return (
@@ -75,11 +81,17 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
           <span className="absolute left-0 right-0 top-1/2 h-px bg-gray-200 -z-0"></span>
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
-        </div>
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            No products found.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} {...product} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

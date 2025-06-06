@@ -1,113 +1,14 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { toast } from "@/components/ui/sonner";
-
-// Sample product data (in a real app, this would come from an API)
-const SAMPLE_PRODUCTS = [
-  {
-    id: "iphone14-combo",
-    name: "Mobile Combo For iPhone 14 Pro Max",
-    price: 8269,
-    originalPrice: 9999,
-    image: "https://images.unsplash.com/photo-1605236453806-6ff36851218e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-    category: "Combo Deals",
-    slug: "mobile-combo-iphone-14-pro-max",
-    description: "Complete combo for iPhone 14 Pro Max including display, back panel, and tools.",
-    brand: "Apple",
-    stock: 25,
-  },
-  {
-    id: "oca-remover",
-    name: "Electric OCA Glue Remover Tool",
-    price: 1049,
-    originalPrice: 1299,
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-    category: "Tools",
-    slug: "electric-oca-glue-remover-tool",
-    description: "Professional tool for removing OCA glue from mobile phone screens.",
-    brand: "Generic",
-    stock: 40,
-  },
-  {
-    id: "vivo-housing",
-    name: "Mobile Housing for Vivo Y20",
-    price: 599,
-    originalPrice: 799,
-    image: "https://images.unsplash.com/photo-1569183927949-0c8549a2e2d1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-    category: "Housing",
-    slug: "mobile-housing-vivo-y20",
-    description: "Replacement housing for Vivo Y20 mobile phone.",
-    brand: "Vivo",
-    stock: 30,
-  },
-  {
-    id: "lenovo-battery",
-    name: "Mobile Battery for Lenovo K6 Power",
-    price: 659,
-    originalPrice: 899,
-    image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1472&q=80",
-    category: "Battery",
-    slug: "mobile-battery-lenovo-k6-power",
-    description: "Replacement battery for Lenovo K6 Power mobile phone.",
-    brand: "Lenovo",
-    stock: 35,
-  },
-  {
-    id: "note8-battery",
-    name: "Mobile Battery for Samsung Note 8 Pro",
-    price: 699,
-    originalPrice: 999,
-    image: "https://images.unsplash.com/photo-1583225214464-9296029427aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D&auto=format&fit=crop&w=1548&q=80",
-    category: "Battery",
-    slug: "mobile-battery-samsung-note-8-pro",
-    description: "Replacement battery for Samsung Note 8 Pro mobile phone.",
-    brand: "Samsung",
-    stock: 28,
-  },
-  {
-    id: "lcd-separator",
-    name: "RD 009T LCD Separator Machine",
-    price: 2799,
-    originalPrice: 3499,
-    image: "https://images.unsplash.com/photo-1602526429747-ac387a91d43b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    category: "Tools",
-    slug: "rd-009t-lcd-separator-machine",
-    description: "Professional machine for separating LCD screens.",
-    brand: "RD",
-    stock: 15,
-  },
-  {
-    id: "iphone14-backpanel",
-    name: "Back Panel Cover for iPhone 14 Pro Max",
-    price: 699,
-    originalPrice: 1099,
-    image: "https://images.unsplash.com/photo-1592286927505-1def25115f54?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    category: "Back Panels",
-    slug: "back-panel-cover-for-iphone-14-pro-max",
-    description: "Replacement back panel cover for iPhone 14 Pro Max.",
-    brand: "Apple",
-    stock: 50,
-  },
-  {
-    id: "charging-cable",
-    name: "Fast Charging USB Cable Type C",
-    price: 249,
-    originalPrice: 499,
-    image: "https://images.unsplash.com/photo-1492107376256-4026437554b9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fA%3D%3D&auto=format&fit=crop&w=1548&q=80",
-    category: "Accessories",
-    slug: "fast-charging-usb-cable-type-c",
-    description: "High-speed USB Type C charging cable.",
-    brand: "Generic",
-    stock: 100,
-  },
-];
+import { supabase } from "@/integrations/supabase/client";
 
 // Product type
 export type Product = {
   id: string;
   name: string;
   price: number;
-  originalPrice?: number;
+  original_price?: number;
   image: string;
   category: string;
   slug: string;
@@ -116,123 +17,219 @@ export type Product = {
   stock?: number;
 };
 
-// Global products state to share across components
-let globalProducts: Product[] = [...SAMPLE_PRODUCTS];
-const listeners: Set<() => void> = new Set();
-
-const notifyListeners = () => {
-  console.log("Notifying all listeners of product changes. Total listeners:", listeners.size);
-  listeners.forEach(listener => {
-    try {
-      listener();
-    } catch (error) {
-      console.error("Error in product listener:", error);
-    }
-  });
-};
-
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([...globalProducts]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   
-  // Create a stable listener function
-  const updateLocalState = useCallback(() => {
-    console.log("Product listener triggered, updating local state with", globalProducts.length, "products");
-    setProducts([...globalProducts]);
-  }, []);
-  
-  useEffect(() => {
-    // Add listener
-    listeners.add(updateLocalState);
-    console.log("Added listener, total listeners:", listeners.size);
-    
-    // Initial sync
-    setProducts([...globalProducts]);
-    
-    return () => {
-      listeners.delete(updateLocalState);
-      console.log("Removed listener, remaining listeners:", listeners.size);
-    };
-  }, [updateLocalState]);
-  
   const getProducts = useCallback(async () => {
-    console.log("getProducts called, returning:", globalProducts.length, "products");
+    console.log("Fetching products from Supabase...");
     setLoading(true);
     
-    // Simulate API delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    setLoading(false);
-    // Return a fresh copy to ensure reactivity
-    return [...globalProducts];
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error("Error fetching products:", error);
+        throw error;
+      }
+      
+      console.log("Products fetched successfully:", data?.length || 0);
+      const formattedProducts = data?.map(product => ({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        original_price: product.original_price,
+        image: product.image,
+        category: product.category,
+        slug: product.slug,
+        description: product.description,
+        brand: product.brand,
+        stock: product.stock
+      })) || [];
+      
+      setProducts(formattedProducts);
+      return formattedProducts;
+    } catch (error) {
+      console.error("Error in getProducts:", error);
+      toast.error("Failed to load products");
+      return [];
+    } finally {
+      setLoading(false);
+    }
   }, []);
   
+  // Load products on hook initialization
+  useEffect(() => {
+    getProducts();
+  }, [getProducts]);
+  
   const getProduct = useCallback(async (id: string) => {
-    // In a real app, this would be an API call
-    const product = globalProducts.find(p => p.id === id);
-    
-    if (!product) {
-      throw new Error("Product not found");
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) {
+        console.error("Error fetching product:", error);
+        throw new Error("Product not found");
+      }
+      
+      return {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        original_price: data.original_price,
+        image: data.image,
+        category: data.category,
+        slug: data.slug,
+        description: data.description,
+        brand: data.brand,
+        stock: data.stock
+      };
+    } catch (error) {
+      console.error("Error in getProduct:", error);
+      throw error;
     }
-    
-    return product;
   }, []);
   
   const createProduct = useCallback(async (productData: Omit<Product, 'id'>) => {
-    // Generate a unique ID
-    const id = `prod-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    // In a real app, this would be an API call
-    const newProduct = {
-      id,
-      ...productData,
-    };
-    
-    console.log("Creating new product:", newProduct);
-    globalProducts = [...globalProducts, newProduct];
-    console.log("Total products after creation:", globalProducts.length);
-    
-    // Show success message
-    toast.success(`Product "${newProduct.name}" created successfully!`);
-    
-    // Force update all components
-    notifyListeners();
-    
-    return newProduct;
-  }, []);
+    try {
+      console.log("Creating new product:", productData);
+      setLoading(true);
+      
+      const { data, error } = await supabase
+        .from('products')
+        .insert([{
+          name: productData.name,
+          price: productData.price,
+          original_price: productData.original_price,
+          image: productData.image,
+          category: productData.category,
+          slug: productData.slug,
+          description: productData.description,
+          brand: productData.brand,
+          stock: productData.stock
+        }])
+        .select()
+        .single();
+      
+      if (error) {
+        console.error("Error creating product:", error);
+        throw error;
+      }
+      
+      const newProduct = {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        original_price: data.original_price,
+        image: data.image,
+        category: data.category,
+        slug: data.slug,
+        description: data.description,
+        brand: data.brand,
+        stock: data.stock
+      };
+      
+      console.log("Product created successfully:", newProduct);
+      toast.success(`Product "${newProduct.name}" created successfully!`);
+      
+      // Refresh the products list
+      await getProducts();
+      
+      return newProduct;
+    } catch (error) {
+      console.error("Error in createProduct:", error);
+      toast.error("Failed to create product");
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, [getProducts]);
   
   const updateProduct = useCallback(async (id: string, productData: Partial<Product>) => {
-    // In a real app, this would be an API call
-    const index = globalProducts.findIndex(product => product.id === id);
-    if (index !== -1) {
-      globalProducts[index] = { ...globalProducts[index], ...productData };
-      console.log("Updated product:", globalProducts[index]);
+    try {
+      console.log("Updating product:", id, productData);
+      setLoading(true);
       
-      // Update the global array reference
-      globalProducts = [...globalProducts];
+      const { data, error } = await supabase
+        .from('products')
+        .update({
+          name: productData.name,
+          price: productData.price,
+          original_price: productData.original_price,
+          image: productData.image,
+          category: productData.category,
+          slug: productData.slug,
+          description: productData.description,
+          brand: productData.brand,
+          stock: productData.stock
+        })
+        .eq('id', id)
+        .select()
+        .single();
       
+      if (error) {
+        console.error("Error updating product:", error);
+        throw error;
+      }
+      
+      console.log("Product updated successfully:", data);
       toast.success("Product updated successfully!");
-      notifyListeners();
+      
+      // Refresh the products list
+      await getProducts();
+      
+      return data;
+    } catch (error) {
+      console.error("Error in updateProduct:", error);
+      toast.error("Failed to update product");
+      throw error;
+    } finally {
+      setLoading(false);
     }
-    
-    return { id, ...productData };
-  }, []);
+  }, [getProducts]);
   
   const deleteProduct = useCallback(async (id: string) => {
-    // In a real app, this would be an API call
-    const originalLength = globalProducts.length;
-    const productToDelete = globalProducts.find(p => p.id === id);
-    
-    globalProducts = globalProducts.filter(product => product.id !== id);
-    console.log("Deleted product, products count changed from", originalLength, "to", globalProducts.length);
-    
-    if (productToDelete) {
-      toast.success(`Product "${productToDelete.name}" deleted successfully!`);
+    try {
+      console.log("Deleting product:", id);
+      setLoading(true);
+      
+      // Get product name for toast message
+      const productToDelete = products.find(p => p.id === id);
+      
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
+      
+      if (error) {
+        console.error("Error deleting product:", error);
+        throw error;
+      }
+      
+      console.log("Product deleted successfully");
+      if (productToDelete) {
+        toast.success(`Product "${productToDelete.name}" deleted successfully!`);
+      }
+      
+      // Refresh the products list
+      await getProducts();
+      
+      return true;
+    } catch (error) {
+      console.error("Error in deleteProduct:", error);
+      toast.error("Failed to delete product");
+      throw error;
+    } finally {
+      setLoading(false);
     }
-    
-    notifyListeners();
-    return true;
-  }, []);
+  }, [products, getProducts]);
   
   return {
     products,

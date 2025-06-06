@@ -9,33 +9,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/hooks/useProducts";
 
 const AdminProducts = () => {
-  const { getProducts, deleteProduct } = useProducts();
+  const { products, loading, deleteProduct } = useProducts();
   const { user } = useAuth();
-  const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await getProducts();
-        setProducts(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        toast.error("Failed to load products");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchProducts();
-  }, [getProducts]);
   
   const handleDeleteProduct = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         await deleteProduct(id);
-        setProducts(products.filter(product => product.id !== id));
         toast.success("Product deleted successfully");
       } catch (error) {
         console.error("Error deleting product:", error);
@@ -89,7 +70,7 @@ const AdminProducts = () => {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {isLoading ? (
+              {loading ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-4 text-center">Loading products...</td>
                 </tr>

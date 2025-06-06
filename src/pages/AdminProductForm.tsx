@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -40,7 +39,7 @@ const AdminProductForm = () => {
           setProductData({
             name: product.name || "",
             price: product.price?.toString() || "",
-            originalPrice: product.originalPrice?.toString() || "",
+            originalPrice: product.original_price?.toString() || "",
             category: product.category || "",
             description: product.description || "",
             brand: product.brand || "",
@@ -92,10 +91,15 @@ const AdminProductForm = () => {
     }
     
     const formattedData = {
-      ...productData,
+      name: productData.name,
       price: parseFloat(productData.price),
-      originalPrice: productData.originalPrice ? parseFloat(productData.originalPrice) : null,
+      original_price: productData.originalPrice ? parseFloat(productData.originalPrice) : undefined,
+      category: productData.category,
+      description: productData.description,
+      brand: productData.brand,
       stock: parseInt(productData.stock, 10),
+      image: productData.image,
+      slug: productData.slug,
     };
     
     try {

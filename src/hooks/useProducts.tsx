@@ -17,6 +17,22 @@ export type Product = {
   stock?: number;
 };
 
+// Database row type
+type ProductRow = {
+  id: string;
+  name: string;
+  price: number;
+  original_price: number | null;
+  image: string;
+  category: string;
+  slug: string;
+  description: string | null;
+  brand: string | null;
+  stock: number | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -27,9 +43,9 @@ export const useProducts = () => {
     
     try {
       const { data, error } = await supabase
-        .from('products')
+        .from('products' as any)
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as { data: ProductRow[] | null, error: any };
       
       if (error) {
         console.error("Error fetching products:", error);
@@ -41,13 +57,13 @@ export const useProducts = () => {
         id: product.id,
         name: product.name,
         price: product.price,
-        original_price: product.original_price,
+        original_price: product.original_price || undefined,
         image: product.image,
         category: product.category,
         slug: product.slug,
-        description: product.description,
-        brand: product.brand,
-        stock: product.stock
+        description: product.description || undefined,
+        brand: product.brand || undefined,
+        stock: product.stock || undefined
       })) || [];
       
       setProducts(formattedProducts);
@@ -69,13 +85,17 @@ export const useProducts = () => {
   const getProduct = useCallback(async (id: string) => {
     try {
       const { data, error } = await supabase
-        .from('products')
+        .from('products' as any)
         .select('*')
         .eq('id', id)
-        .single();
+        .single() as { data: ProductRow | null, error: any };
       
       if (error) {
         console.error("Error fetching product:", error);
+        throw new Error("Product not found");
+      }
+      
+      if (!data) {
         throw new Error("Product not found");
       }
       
@@ -83,13 +103,13 @@ export const useProducts = () => {
         id: data.id,
         name: data.name,
         price: data.price,
-        original_price: data.original_price,
+        original_price: data.original_price || undefined,
         image: data.image,
         category: data.category,
         slug: data.slug,
-        description: data.description,
-        brand: data.brand,
-        stock: data.stock
+        description: data.description || undefined,
+        brand: data.brand || undefined,
+        stock: data.stock || undefined
       };
     } catch (error) {
       console.error("Error in getProduct:", error);
@@ -103,37 +123,41 @@ export const useProducts = () => {
       setLoading(true);
       
       const { data, error } = await supabase
-        .from('products')
+        .from('products' as any)
         .insert([{
           name: productData.name,
           price: productData.price,
-          original_price: productData.original_price,
+          original_price: productData.original_price || null,
           image: productData.image,
           category: productData.category,
           slug: productData.slug,
-          description: productData.description,
-          brand: productData.brand,
-          stock: productData.stock
+          description: productData.description || null,
+          brand: productData.brand || null,
+          stock: productData.stock || 0
         }])
         .select()
-        .single();
+        .single() as { data: ProductRow | null, error: any };
       
       if (error) {
         console.error("Error creating product:", error);
         throw error;
       }
       
+      if (!data) {
+        throw new Error("Failed to create product");
+      }
+      
       const newProduct = {
         id: data.id,
         name: data.name,
         price: data.price,
-        original_price: data.original_price,
+        original_price: data.original_price || undefined,
         image: data.image,
         category: data.category,
         slug: data.slug,
-        description: data.description,
-        brand: data.brand,
-        stock: data.stock
+        description: data.description || undefined,
+        brand: data.brand || undefined,
+        stock: data.stock || undefined
       };
       
       console.log("Product created successfully:", newProduct);
@@ -158,21 +182,21 @@ export const useProducts = () => {
       setLoading(true);
       
       const { data, error } = await supabase
-        .from('products')
+        .from('products' as any)
         .update({
           name: productData.name,
           price: productData.price,
-          original_price: productData.original_price,
+          original_price: productData.original_price || null,
           image: productData.image,
           category: productData.category,
           slug: productData.slug,
-          description: productData.description,
-          brand: productData.brand,
-          stock: productData.stock
+          description: productData.description || null,
+          brand: productData.brand || null,
+          stock: productData.stock || 0
         })
         .eq('id', id)
         .select()
-        .single();
+        .single() as { data: ProductRow | null, error: any };
       
       if (error) {
         console.error("Error updating product:", error);
@@ -204,7 +228,7 @@ export const useProducts = () => {
       const productToDelete = products.find(p => p.id === id);
       
       const { error } = await supabase
-        .from('products')
+        .from('products' as any)
         .delete()
         .eq('id', id);
       

@@ -13,6 +13,7 @@ const AdminProductForm = () => {
     isLoading,
     isNewProduct,
     handleChange,
+    handleImageUpload,
     generateSlug,
     handleSubmit,
     handleCancel,
@@ -34,9 +35,12 @@ const AdminProductForm = () => {
             productData={productData}
             handleChange={handleChange}
             generateSlug={generateSlug}
+            onImageUploaded={handleImageUpload}
           />
           
-          <ProductImagePreview imageUrl={productData.image} />
+          {productData.image && (
+            <ProductImagePreview imageUrl={productData.image} />
+          )}
           
           <ProductFormActions
             isLoading={isLoading}

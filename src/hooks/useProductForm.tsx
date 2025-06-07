@@ -61,6 +61,13 @@ export const useProductForm = () => {
       [name]: value,
     }));
   };
+
+  const handleImageUpload = (imageUrl: string) => {
+    setProductData((prev) => ({
+      ...prev,
+      image: imageUrl,
+    }));
+  };
   
   const generateSlug = () => {
     if (productData.name) {
@@ -80,7 +87,7 @@ export const useProductForm = () => {
     e.preventDefault();
     
     if (!productData.name || !productData.price || !productData.category || !productData.image) {
-      toast.error("Please fill all required fields");
+      toast.error("Please fill all required fields including uploading an image");
       return;
     }
     
@@ -124,6 +131,7 @@ export const useProductForm = () => {
     isLoading,
     isNewProduct,
     handleChange,
+    handleImageUpload,
     generateSlug,
     handleSubmit,
     handleCancel,

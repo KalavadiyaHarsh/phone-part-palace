@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import ImageUpload from "./ImageUpload";
 
 interface ProductFormFieldsProps {
   productData: {
@@ -19,9 +20,10 @@ interface ProductFormFieldsProps {
   };
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   generateSlug: () => void;
+  onImageUploaded: (imageUrl: string) => void;
 }
 
-const ProductFormFields = ({ productData, handleChange, generateSlug }: ProductFormFieldsProps) => {
+const ProductFormFields = ({ productData, handleChange, generateSlug, onImageUploaded }: ProductFormFieldsProps) => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -128,19 +130,13 @@ const ProductFormFields = ({ productData, handleChange, generateSlug }: ProductF
             min="0"
           />
         </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="image">Image URL*</Label>
-          <Input
-            id="image"
-            name="image"
-            value={productData.image}
-            onChange={handleChange}
-            placeholder="Enter image URL"
-            required
-          />
-        </div>
       </div>
+      
+      {/* Image Upload Section */}
+      <ImageUpload 
+        onImageUploaded={onImageUploaded}
+        currentImage={productData.image}
+      />
       
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>

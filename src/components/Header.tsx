@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, ShoppingCart, Menu, X, Phone, Mail, User, LogOut } from "lucide-react";
@@ -16,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import SearchInput from "@/components/SearchInput";
 
 const Header = () => {
   const { totalItems } = useCart();
@@ -73,19 +73,9 @@ const Header = () => {
           </div>
         </Link>
 
-        <div className="hidden md:flex flex-grow mx-6 relative">
-          <Input 
-            type="search" 
-            placeholder="Search the store" 
-            className="w-full pr-10"
-          />
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="absolute right-0 top-0 h-full text-gray-400 hover:text-brand-orange"
-          >
-            <Search size={20} />
-          </Button>
+        {/* Desktop search */}
+        <div className="hidden md:flex flex-grow mx-6">
+          <SearchInput className="w-full" />
         </div>
 
         <div className="flex items-center space-x-3">
@@ -177,19 +167,12 @@ const Header = () => {
                 </Button>
               </div>
               <div className="p-2">
-                <div className="relative mb-4">
-                  <Input 
-                    type="search" 
-                    placeholder="Search the store" 
-                    className="w-full pr-10"
+                {/* Mobile search */}
+                <div className="mb-4">
+                  <SearchInput 
+                    className="w-full" 
+                    onMobileSearch={toggleMenu}
                   />
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="absolute right-0 top-0 h-full text-gray-400"
-                  >
-                    <Search size={20} />
-                  </Button>
                 </div>
                 <ul>
                   {categories.map((category) => (

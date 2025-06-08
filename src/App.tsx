@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +18,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminProducts from "./pages/AdminProducts";
 import AdminProductForm from "./pages/AdminProductForm";
 import { AuthProvider } from "@/contexts/AuthContext";
+import SearchResults from "./pages/SearchResults";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +48,7 @@ const App = () => {
                 <Route path="/products/:slug" element={<ProductDetail />} />
                 <Route path="/brand/:brandId" element={<BrandPage />} />
                 <Route path="/category/:categoryId" element={<CategoryPage />} />
+                <Route path="/search" element={<SearchResults />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="*" element={<NotFound />} />
               </Route>

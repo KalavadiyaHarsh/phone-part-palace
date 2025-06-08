@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useParams, Link } from "react-router-dom";
-import { ChevronRight, SlidersHorizontal, X } from "lucide-react";
+import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,135 +15,10 @@ import {
 } from "@/components/ui/sheet";
 import ProductCard from "@/components/ProductCard";
 import { Separator } from "@/components/ui/separator";
+import { useProducts } from "@/hooks/useProducts";
+import { useCategories } from "@/hooks/useCategories";
 
-// Mock categories
-const categories = [
-  {
-    id: "mobile-display",
-    name: "MOBILE DISPLAY",
-    image: "https://images.unsplash.com/photo-1592286927505-1def25115f54?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    description: "High-quality replacement displays for all major phone brands",
-  },
-  {
-    id: "mobile-spare-parts",
-    name: "MOBILE SPARE PARTS",
-    image: "https://images.unsplash.com/photo-1602526429747-ac387a91d43b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    description: "Genuine replacement parts for all mobile phone models",
-  },
-  {
-    id: "laptop-spares",
-    name: "LAPTOP SPARES",
-    image: "https://images.unsplash.com/photo-1588702547919-26089e690ecc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    description: "Quality laptop spare parts for all major brands",
-  },
-  {
-    id: "tools",
-    name: "TOOLS",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-    description: "Professional repair tools for mobile and laptop repairs",
-  },
-  {
-    id: "accessories",
-    name: "ACCESSORIES",
-    image: "https://images.unsplash.com/photo-1492107376256-4026437554b9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1548&q=80",
-    description: "Premium quality accessories for all your devices",
-  },
-];
-
-// Mock products for all categories
-const allProducts = [
-  {
-    id: "iphone14-combo",
-    name: "Mobile Combo For iPhone 14 Pro Max",
-    price: 8269,
-    originalPrice: 9999,
-    image: "https://images.unsplash.com/photo-1605236453806-6ff36851218e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-    category: "mobile-spare-parts",
-    slug: "mobile-combo-iphone-14-pro-max",
-    brand: "apple",
-  },
-  {
-    id: "oca-remover",
-    name: "Electric OCA Glue Remover Tool",
-    price: 1049,
-    originalPrice: 1299,
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-    category: "tools",
-    slug: "electric-oca-glue-remover-tool",
-    brand: "generic",
-  },
-  {
-    id: "vivo-housing",
-    name: "Mobile Housing for Vivo Y20",
-    price: 599,
-    originalPrice: 799,
-    image: "https://images.unsplash.com/photo-1569183927949-0c8549a2e2d1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-    category: "mobile-spare-parts",
-    slug: "mobile-housing-vivo-y20",
-    brand: "vivo",
-  },
-  {
-    id: "lenovo-battery",
-    name: "Mobile Battery for Lenovo K6 Power",
-    price: 659,
-    originalPrice: 899,
-    image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1472&q=80",
-    category: "mobile-spare-parts",
-    slug: "mobile-battery-lenovo-k6-power",
-    brand: "lenovo",
-  },
-  {
-    id: "note8-battery",
-    name: "Mobile Battery for Samsung Note 8 Pro",
-    price: 699,
-    originalPrice: 999,
-    image: "https://images.unsplash.com/photo-1583225214464-9296029427aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1548&q=80",
-    category: "mobile-spare-parts",
-    slug: "mobile-battery-samsung-note-8-pro",
-    brand: "samsung",
-  },
-  {
-    id: "lcd-separator",
-    name: "RD 009T LCD Separator Machine",
-    price: 2799,
-    originalPrice: 3499,
-    image: "https://images.unsplash.com/photo-1602526429747-ac387a91d43b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    category: "tools",
-    slug: "rd-009t-lcd-separator-machine",
-    brand: "rd-tools",
-  },
-  {
-    id: "iphone14-backpanel",
-    name: "Back Panel Cover for iPhone 14 Pro Max",
-    price: 699,
-    originalPrice: 1099,
-    image: "https://images.unsplash.com/photo-1592286927505-1def25115f54?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    category: "mobile-spare-parts",
-    slug: "back-panel-cover-for-iphone-14-pro-max",
-    brand: "apple",
-  },
-  {
-    id: "charging-cable",
-    name: "Fast Charging USB Cable Type C",
-    price: 249,
-    originalPrice: 499,
-    image: "https://images.unsplash.com/photo-1492107376256-4026437554b9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1548&q=80",
-    category: "accessories",
-    slug: "fast-charging-usb-cable-type-c",
-    brand: "generic",
-  },
-];
-
-// Filter options
-const brands = [
-  { id: "apple", name: "Apple" },
-  { id: "samsung", name: "Samsung" },
-  { id: "vivo", name: "Vivo" },
-  { id: "oneplus", name: "OnePlus" },
-  { id: "lenovo", name: "Lenovo" },
-  { id: "generic", name: "Generic" },
-];
-
+// Price ranges for filtering
 const priceRanges = [
   { id: "under-500", name: "Under ₹500", min: 0, max: 499 },
   { id: "500-1000", name: "₹500 - ₹999", min: 500, max: 999 },
@@ -154,15 +29,18 @@ const priceRanges = [
 
 const CategoryPage: React.FC = () => {
   const { categoryId } = useParams();
+  const { products, loading } = useProducts();
+  const { categories, availableBrands } = useCategories();
+  
   const [selectedBrands, setSelectedBrands] = React.useState<string[]>([]);
   const [selectedPriceRange, setSelectedPriceRange] = React.useState<string | null>(null);
   const [sortBy, setSortBy] = React.useState<string>("featured");
   
   const category = categories.find((cat) => cat.id === categoryId);
   
-  // Filter products by category
+  // Filter products by category and other filters
   const filteredProducts = React.useMemo(() => {
-    let filtered = allProducts;
+    let filtered = products;
     
     // Filter by category
     if (categoryId) {
@@ -171,7 +49,9 @@ const CategoryPage: React.FC = () => {
     
     // Filter by brands
     if (selectedBrands.length > 0) {
-      filtered = filtered.filter((product) => selectedBrands.includes(product.brand));
+      filtered = filtered.filter((product) => 
+        product.brand && selectedBrands.includes(product.brand.toLowerCase().replace(/\s+/g, '-'))
+      );
     }
     
     // Filter by price range
@@ -194,14 +74,14 @@ const CategoryPage: React.FC = () => {
         return [...filtered].sort((a, b) => a.id.localeCompare(b.id));
       case "discount":
         return [...filtered].sort((a, b) => {
-          const discountA = a.originalPrice ? (a.originalPrice - a.price) / a.originalPrice : 0;
-          const discountB = b.originalPrice ? (b.originalPrice - b.price) / b.originalPrice : 0;
+          const discountA = a.original_price ? (a.original_price - a.price) / a.original_price : 0;
+          const discountB = b.original_price ? (b.original_price - b.price) / b.original_price : 0;
           return discountB - discountA;
         });
       default:
         return filtered;
     }
-  }, [categoryId, selectedBrands, selectedPriceRange, sortBy]);
+  }, [products, categoryId, selectedBrands, selectedPriceRange, sortBy]);
   
   const handleBrandChange = (brand: string) => {
     setSelectedBrands((prev) =>
@@ -235,6 +115,22 @@ const CategoryPage: React.FC = () => {
   // If no specific category is provided, show all products
   const categoryName = category ? category.name : "All Products";
   const categoryDescription = category ? category.description : "Browse our complete collection of products";
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded mb-6 w-1/3"></div>
+          <div className="h-32 bg-gray-200 rounded mb-6"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="bg-gray-200 rounded-lg h-80"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -277,28 +173,30 @@ const CategoryPage: React.FC = () => {
               </div>
               <Separator className="mb-4" />
               
-              {/* Brand filter */}
-              <div className="mb-6">
-                <h4 className="text-sm font-medium mb-3">Brand</h4>
-                <div className="space-y-2">
-                  {brands.map((brand) => (
-                    <div key={brand.id} className="flex items-center">
-                      <Checkbox
-                        id={`brand-${brand.id}`}
-                        checked={selectedBrands.includes(brand.id)}
-                        onCheckedChange={() => handleBrandChange(brand.id)}
-                        className="data-[state=checked]:bg-brand-orange data-[state=checked]:border-brand-orange"
-                      />
-                      <Label
-                        htmlFor={`brand-${brand.id}`}
-                        className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {brand.name}
-                      </Label>
-                    </div>
-                  ))}
+              {/* Brand filter - only show if there are brands available */}
+              {availableBrands.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="text-sm font-medium mb-3">Brand</h4>
+                  <div className="space-y-2">
+                    {availableBrands.map((brand) => (
+                      <div key={brand.id} className="flex items-center">
+                        <Checkbox
+                          id={`brand-${brand.id}`}
+                          checked={selectedBrands.includes(brand.id)}
+                          onCheckedChange={() => handleBrandChange(brand.id)}
+                          className="data-[state=checked]:bg-brand-orange data-[state=checked]:border-brand-orange"
+                        />
+                        <Label
+                          htmlFor={`brand-${brand.id}`}
+                          className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {brand.name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
               
               {/* Price range filter */}
               <div>
@@ -395,30 +293,32 @@ const CategoryPage: React.FC = () => {
               <SheetTitle>Filters</SheetTitle>
             </SheetHeader>
             <div className="mt-6">
-              {/* Brand filter */}
-              <div className="mb-6">
-                <h4 className="text-sm font-medium mb-3">Brand</h4>
-                <div className="space-y-2">
-                  {brands.map((brand) => (
-                    <div key={brand.id} className="flex items-center">
-                      <Checkbox
-                        id={`mobile-brand-${brand.id}`}
-                        checked={selectedBrands.includes(brand.id)}
-                        onCheckedChange={() => handleBrandChange(brand.id)}
-                        className="data-[state=checked]:bg-brand-orange data-[state=checked]:border-brand-orange"
-                      />
-                      <Label
-                        htmlFor={`mobile-brand-${brand.id}`}
-                        className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {brand.name}
-                      </Label>
-                    </div>
-                  ))}
+              {/* Brand filter - mobile */}
+              {availableBrands.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="text-sm font-medium mb-3">Brand</h4>
+                  <div className="space-y-2">
+                    {availableBrands.map((brand) => (
+                      <div key={brand.id} className="flex items-center">
+                        <Checkbox
+                          id={`mobile-brand-${brand.id}`}
+                          checked={selectedBrands.includes(brand.id)}
+                          onCheckedChange={() => handleBrandChange(brand.id)}
+                          className="data-[state=checked]:bg-brand-orange data-[state=checked]:border-brand-orange"
+                        />
+                        <Label
+                          htmlFor={`mobile-brand-${brand.id}`}
+                          className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {brand.name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
               
-              {/* Price range filter */}
+              {/* Price range filter - mobile */}
               <div>
                 <h4 className="text-sm font-medium mb-3">Price Range</h4>
                 <RadioGroup value={selectedPriceRange || ""} onValueChange={handlePriceRangeChange}>

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, ShoppingCart, Menu, X, Phone, Mail, User, LogOut } from "lucide-react";
@@ -7,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import CartSidebar from "@/components/CartSidebar";
 import {
   DropdownMenu,
@@ -16,11 +18,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import SearchInput from "@/components/SearchInput";
+import { useMediaQuery } from "@/hooks/use-mobile";
 
 const Header = () => {
   const { totalItems } = useCart();
   const { user, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
   
   const categories = [
     { name: "MOBILE DISPLAY", href: "/category/mobile-display" },
@@ -37,6 +42,44 @@ const Header = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+  };
+
+  const CartComponent = isMobile ? (
+    <Drawer>
+      <DrawerTrigger asChild>
+        <Button variant="outline" size="icon" className="relative">
+          <ShoppingCart size={20} />
+          {totalItems > 0 && (
+            <Badge className="absolute -top-2 -right-2 bg-brand-orange text-white p-1 h-5 min-w-5 flex items-center justify-center rounded-full">
+              {totalItems}
+            </Badge>
+          )}
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent className="h-[90vh]">
+        <CartSidebar />
+      </DrawerContent>
+    </Drawer>
+  ) : (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="icon" className="relative">
+          <ShoppingCart size={20} />
+          {totalItems > 0 && (
+            <Badge className="absolute -top-2 -right-2 bg-brand-orange text-white p-1 h-5 min-w-5 flex items-center justify-center rounded-full">
+              {totalItems}
+            </Badge>
+          )}
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-full sm:w-[400px] p-0">
+        <CartSidebar />
+      </SheetContent>
+    </Sheet>
+  );
 
   return (
     <header className="w-full">
@@ -79,6 +122,16 @@ const Header = () => {
         </div>
 
         <div className="flex items-center space-x-3">
+          {/* Mobile search button */}
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="md:hidden" 
+            onClick={toggleSearch}
+          >
+            <Search size={20} />
+          </Button>
+
           {/* Sign in option - only shown on desktop */}
           <div className="hidden lg:block">
             {user ? (
@@ -118,27 +171,30 @@ const Header = () => {
             )}
           </div>
           
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="relative">
-                <ShoppingCart size={20} />
-                {totalItems > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-brand-orange text-white p-1 h-5 min-w-5 flex items-center justify-center rounded-full">
-                    {totalItems}
-                  </Badge>
-                )}
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:w-[400px] p-0">
-              <CartSidebar />
-            </SheetContent>
-          </Sheet>
+          {CartComponent}
           
           <Button variant="outline" size="icon" className="lg:hidden" onClick={toggleMenu}>
             {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </Button>
         </div>
       </div>
+
+      {/* Mobile search overlay */}
+      {isSearchOpen && (
+        <div className="md:hidden bg-white border-b border-gray-200 p-4">
+          <div className="flex items-center gap-2">
+            <div className="flex-grow">
+              <SearchInput 
+                className="w-full" 
+                onMobileSearch={toggleSearch}
+              />
+            </div>
+            <Button variant="ghost" size="icon" onClick={toggleSearch}>
+              <X size={20} />
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="bg-brand-orange text-white">
@@ -167,13 +223,6 @@ const Header = () => {
                 </Button>
               </div>
               <div className="p-2">
-                {/* Mobile search */}
-                <div className="mb-4">
-                  <SearchInput 
-                    className="w-full" 
-                    onMobileSearch={toggleMenu}
-                  />
-                </div>
                 <ul>
                   {categories.map((category) => (
                     <li key={category.name} className="border-b">

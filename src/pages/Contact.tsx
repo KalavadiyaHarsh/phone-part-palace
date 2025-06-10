@@ -11,7 +11,7 @@ import { toast } from "@/components/ui/sonner";
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
+    phone: "",
     message: "",
   });
 
@@ -27,7 +27,7 @@ const Contact = () => {
     e.preventDefault();
     // Here you would typically send the form data to your backend
     toast.success("Thank you for your message! We'll get back to you soon.");
-    setFormData({ name: "", email: "", message: "" });
+    setFormData({ name: "", phone: "", message: "" });
   };
 
   return (
@@ -66,15 +66,15 @@ const Contact = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="email" className="text-base font-medium text-gray-900">
-                      Email
+                    <Label htmlFor="phone" className="text-base font-medium text-gray-900">
+                      Contact Number
                     </Label>
                     <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={formData.email}
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="Your contact number"
+                      value={formData.phone}
                       onChange={handleInputChange}
                       required
                       className="mt-2"
